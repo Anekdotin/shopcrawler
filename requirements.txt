@@ -1,0 +1,6 @@
+beautifulsoup4
+fake-useragent
+requests
+urlextract
+unidecode
+lxml
