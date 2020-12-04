@@ -1,16 +1,15 @@
 from config import proxy_enabled
 import requests
 import random
-from random import randrange
-
+from random import randrange, randint
+from time import sleep
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from fake_useragent import UserAgent
 from lxml.html.soupparser import fromstring
-
+from secret import my_ip
 from amazon.video_cards_nvidia_3080 import *
 from amazon.video_cards_nvidia_3090 import *
 from newegg.video_cards_nvidia_3080 import *
@@ -19,6 +18,7 @@ from newegg.video_cards_nvidia_3090 import *
 
 bannedproxy = []
 proxylist = []
+use_proxy = 0
 
 
 class TerminalColors:
@@ -60,51 +60,108 @@ def getgoodproxy():
 
 
 def selenium_getter():
-    randomproxy = getgoodproxy()
-    myproxy = randomproxy
 
-    proxy = Proxy({
-        'proxyType': ProxyType.MANUAL,
-        'httpProxy': myproxy,
-        'ftpProxy': myproxy,
-        'sslProxy': myproxy,
-        'noProxy': ''
-    })
-    print(f"{TerminalColors.ENDC}  using proxy {myproxy}")
-    binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
+    if use_proxy == 1:
+        randomproxy = getgoodproxy()
+        myproxy = randomproxy
 
-    options = Options()
-    options.headless = True
-    driver = webdriver.Firefox(options=options, proxy=proxy, firefox_binary=binary, executable_path="./geckodriver.exe")
+        proxy = Proxy({
+            'proxyType': ProxyType.MANUAL,
+            'httpProxy': myproxy,
+            'ftpProxy': myproxy,
+            'sslProxy': myproxy,
+            'noProxy': ''
+        })
+        print(f"{TerminalColors.ENDC}using proxy {myproxy}")
+        binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
+
+        capabilities = webdriver.DesiredCapabilities.FIREFOX
+        proxy.add_to_capabilities(capabilities)
+
+        options = Options()
+        options.headless = False
+        profile = webdriver.FirefoxProfile()
+        profile.accept_untrusted_certs = True
+        profile.set_preference("browser.privatebrowsing.autostart", True)
+
+        driver = webdriver.Firefox(options=options,
+                                   desired_capabilities=capabilities,
+                                   firefox_profile=profile,
+                                   firefox_binary=binary,
+                                   executable_path="./geckodriver.exe")
+        driver.implicitly_wait(5)
+    else:
+        binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
+
+        options = Options()
+        options.headless = False
+        profile = webdriver.FirefoxProfile()
+        profile.accept_untrusted_certs = True
+        profile.set_preference("browser.privatebrowsing.autostart", True)
+
+        driver = webdriver.Firefox(options=options,
+                                   firefox_profile=profile,
+                                   firefox_binary=binary,
+                                   executable_path="./geckodriver.exe")
+        driver.implicitly_wait(5)
 
     return driver
 
 
+def check_proxy_ok(driver):
+    url = 'https://whatismyipaddress.com/ip-lookup'
+
+    driver.get(url)
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    for div in soup.findAll('span', {'id': 'ip'}):
+        print(f"My IP:        {my_ip}")
+        print(f"Appearing as: {div.text}")
+        if str(my_ip == div.text):
+            print("Proxy not working!")
+        else:
+            print("good to go my friend")
+        return div.text
+
+
 def main():
-
     driver = selenium_getter()
+    try:
 
-    print(TerminalColors.ENDC + "Amazon 3080 starting .. ")
-    nvidia_3080_zotac(driver=driver)
-    nvidia_3080_asustuf(driver=driver)
-    nvidia_3080_pny(driver=driver)
-    nvidia_3080_msi(driver=driver)
-    nvidia_3080_evga(driver=driver)
-    nvidia_3080_gigabyte(driver=driver)
+        if use_proxy == 1:
+            proxyip = check_proxy_ok(driver=driver)
+            if my_ip == proxyip:
+                main()
 
-    print(TerminalColors.ENDC + "Amazon 3090 starting .. ")
-    nvidia_3090_zotac(driver=driver)
-    nvidia_3090_asus(driver=driver)
-    nvidia_3090_pny(driver=driver)
-    nvidia_3090_msi(driver=driver)
-    nvidia_3090_gigabyte(driver=driver)
+        print(TerminalColors.ENDC + "Amazon 3080 starting .. ")
 
-    print(TerminalColors.ENDC + "Newegg 3080 starting .. ")
-    newegg_3080(driver=driver)
+        driver.implicitly_wait(3)
+        nvidia_3080_zotac(driver=driver)
+        driver.implicitly_wait(3)
+        nvidia_3080_asustuf(driver=driver)
+        driver.implicitly_wait(3)
+        nvidia_3080_pny(driver=driver)
+        driver.implicitly_wait(3)
+        nvidia_3080_msi(driver=driver)
+        nvidia_3080_evga(driver=driver)
+        nvidia_3080_gigabyte(driver=driver)
 
-    print(TerminalColors.ENDC + "Newegg 3090 starting .. ")
-    newegg_3090(driver=driver)
+        print(TerminalColors.ENDC + "Newegg 3080 starting .. ")
+        newegg_3080(driver=driver)
 
+        print(TerminalColors.ENDC + "Amazon 3090 starting .. ")
+        nvidia_3090_zotac(driver=driver)
+        nvidia_3090_asus(driver=driver)
+        nvidia_3090_pny(driver=driver)
+        nvidia_3090_msi(driver=driver)
+        nvidia_3090_gigabyte(driver=driver)
 
-while True:
-    main()
+        print(TerminalColors.ENDC + "Newegg 3090 starting .. ")
+        newegg_3090(driver=driver)
+
+    except Exception as e:
+        print(str(e))
+
+    driver.close()
+
+main()

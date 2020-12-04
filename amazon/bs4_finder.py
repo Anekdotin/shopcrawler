@@ -27,7 +27,7 @@ def find_data_amazon_url(driver, url, title):
     soup = BeautifulSoup(html, 'html.parser')
     current_time = now.strftime("%H:%M:%S")
 
-    print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.ENDC}  {title[0:40]}..")
+    print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.ENDC}  {title}..")
     print(f"{TerminalColors.OKBLUE}Amazon")
 
     if soup.findAll(text="In Stock."):
