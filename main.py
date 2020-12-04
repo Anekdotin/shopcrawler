@@ -1,145 +1,86 @@
 from config import proxy_enabled
-
-import time
-import random
-import sys
-
 import requests
-from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
-
-from lxml.html.soupparser import fromstring
-from lxml.html import fromstring
-from lxml import html
+import random
+from random import randrange
 
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from fake_useragent import UserAgent
+from lxml.html.soupparser import fromstring
+from amazon.video_cards_nvidia_3080 import *
 
 
+bannedproxy = []
 proxylist = []
-
-amazonid = 'B08HJNKT3P'
 
 
 def get_proxies():
 
     print("Getting new Proxies")
-    sys.stdout.flush()
 
     url = 'https://free-proxy-list.net/'
     response = requests.get(url)
 
     parser = fromstring(response.text)
-    for i in parser.xpath('//tbody/tr')[:50]:
+    for i in parser.xpath('//tbody/tr')[:30]:
         if i.xpath('.//td[7][contains(text(),"yes")]'):
             proxyifound = ":".join([i.xpath('.//td[1]/text()')[0],
                                     i.xpath('.//td[2]/text()')[0]])
             proxylist.append(proxyifound)
+
     print("Found " + str(len(proxylist)) + " proxies")
-    sys.stdout.flush()
 
 
 def getgoodproxy():
-    if len(proxylist) < 20:
-        get_proxies()
+    get_proxies()
     randomproxy = (random.choice(proxylist))
     return randomproxy
 
 
-def proxy_enabled_page():
-    randomproxy = getgoodproxy()
-
-    # get all items
-    urltogetforitems = "http://www.amazon.com/dp/" + amazonid
-    print("Using proxy:", randomproxy)
-
-    # Pick a random user agent
-    ua = UserAgent()
-    user_agent = ua.random
-    # Set the headers
-    headers = {'User-Agent': user_agent}
-    # Make the request
-
-    proxy1 = str("http://") + str(randomproxy)
-    proxy2 = str("https://") + str(randomproxy)
-    proxies = {proxy1:
-                   proxy2}
-
-    # Attemp to contact amazon
-    response = requests.get(urltogetforitems,
-                        proxies=proxies,
-                        headers=headers,
-                        timeout=10)
-    return response
-
-
-def non_proxy_page():
-
-    # get all items
-    urltogetforitems = "http://www.amazon.com/dp/" + amazonid
-
-    ua = UserAgent()
-    user_agent = ua.random
-    # Set the headers
-    headers = {'User-Agent': user_agent}
-    # Make the request
-
-    # Attemp to contact amazon
-    response = requests.get(urltogetforitems,
-                        headers=headers,
-                        timeout=10)
-
-    return response
-
-
 def selenium_getter():
-    binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
-    driver = webdriver.Firefox(firefox_binary=binary, executable_path="./geckodriver.exe")
-    driver.get("http://www.amazon.com")
+    randomproxy = getgoodproxy()
+    myproxy = randomproxy
 
-    if "Amazon" in driver.title:
-        print("success")
+    proxy = Proxy({
+        'proxyType': ProxyType.MANUAL,
+        'httpProxy': myproxy,
+        'ftpProxy': myproxy,
+        'sslProxy': myproxy,
+        'noProxy': ''
+    })
+    print(f"using proxy {myproxy}")
+    binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
+
+    options = Options()
+    options.headless = True
+    driver = webdriver.Firefox(options=options, proxy=proxy, firefox_binary=binary, executable_path="./geckodriver.exe")
 
     return driver
 
-def my_proxy(PROXY_HOST, PROXY_PORT):
-    fp = webdriver.FirefoxProfile()
-    # Direct = 0, Manual = 1, PAC = 2, AUTODETECT = 4, SYSTEM = 5
-    print
-    PROXY_PORT
-    print
-    PROXY_HOST
-    fp.set_preference("network.proxy.type", 1)
-    fp.set_preference("network.proxy.http", PROXY_HOST)
-    fp.set_preference("network.proxy.http_port", int(PROXY_PORT))
-    fp.set_preference("general.useragent.override", "whater_useragent")
-    fp.update_preferences()
-    return webdriver.Firefox(firefox_profile=fp)
-
 
 def main():
-    if proxy_enabled is True:
-        response = proxy_enabled_page()
-    else:
-        response = non_proxy_page()
 
-    print(response.status_code)
+    driver = selenium_getter()
 
-    if response.status_code == 504:
-        print("504 error: Timeout")
+    nvidia_3080_zotac(driver)
 
-    elif response.status_code == 503:
-        print("503 error: Unavailable")
+    print("Amazon 3080 finder Starting .. ")
+    nvidia_3080_asustuf(driver=driver)
+    nvidia_3080_pny(driver=driver)
+    nvidia_3080_pny_2(driver=driver)
+    nvidia_3080_msi_1(driver=driver)
+    nvidia_3080_msi_2(driver=driver)
+    nvidia_3080_evga_1(driver=driver)
+    nvidia_3080_evga_2(driver=driver)
+    nvidia_3080_evga_3(driver=driver)
+    nvidia_3080_evga_4(driver=driver)
+    nvidia_3080_evga_5(driver=driver)
+    nvidia_3080_gigabyte_1(driver=driver)
+    nvidia_3080_gigabyte_2(driver=driver)
 
-    elif response.status_code == 200:
-        c = response.content
-        soup = BeautifulSoup(c, 'html.parser')
-        # get soup information
-        doc = html.fromstring(response.content)
+    print("Newegg 3080 starting .. ")
 
-        print(soup.prettify())
-
-
-selenium_getter()
+main()
