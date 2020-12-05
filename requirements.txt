@@ -4,3 +4,8 @@ requests
 urlextract
 unidecode
 lxml
+flask
+flask_sqlalchemy
+psycopg2
+sqlalchemy
+selenium

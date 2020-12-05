@@ -10,15 +10,15 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from lxml.html.soupparser import fromstring
 from secret import my_ip
 
-from amazon.video_cards_nvidia_3080 import *
-from amazon.video_cards_nvidia_3090 import *
-from amazon.video_cards_nvidia_3070 import *
-from amazon.video_cards_nvidia_3060 import *
+from app.crawler_amazon.video_cards_nvidia_3080 import *
+from app.crawler_amazon.video_cards_nvidia_3090 import *
+from app.crawler_amazon.video_cards_nvidia_3070 import *
+from app.crawler_amazon.video_cards_nvidia_3060 import *
 
-from newegg.video_cards_nvidia_3080 import *
-from newegg.video_cards_nvidia_3090 import *
-from newegg.video_cards_nvidia_3070 import *
-from newegg.video_cards_nvidia_3060 import *
+from app.crawler_newegg.video_cards_nvidia_3080 import *
+from app.crawler_newegg.video_cards_nvidia_3090 import *
+from app.crawler_newegg.video_cards_nvidia_3070 import *
+from app.crawler_newegg.video_cards_nvidia_3060 import *
 
 bannedproxy = []
 proxylist = []
