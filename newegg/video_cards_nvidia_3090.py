@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import time
 from datetime import datetime
 
-now = datetime.now()
-
 
 class TerminalColors:
 
@@ -27,18 +25,20 @@ def newegg_3090(driver):
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
     for div in soup.findAll('div', {'class': 'item-info'}):
-        time.sleep(1)
+
+        now = datetime.now()
+
+        time.sleep(2)
         current_time = now.strftime("%H:%M:%S")
         tdtags = div.find_all("a", {"class": "item-title"})
         for tag in tdtags:
 
             promotag = div.find_all("p", {"class": "item-promo"})
             for promo in promotag:
-                print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.ENDC}  {tag.text[0:40]}..")
-                print(f"{TerminalColors.OKBLUE}Newegg")
+                print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.OKCYAN}Newegg {TerminalColors.ENDC}  {tag.text[0:40]}..")
+
                 if promo.text == 'OUT OF STOCK':
                     print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}{promo.text}")
                 else:
                     print(f"{TerminalColors.ENDC}Status:  {TerminalColors.OKGREEN}{promo.text}")
                 print("")
-

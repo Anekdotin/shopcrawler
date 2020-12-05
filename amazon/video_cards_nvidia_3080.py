@@ -4,7 +4,7 @@ from .bs4_finder import find_data_amazon_url
 
 def nvidia_3080_zotac(driver):
     url = 'https://www.amazon.com/ZOTAC-Graphics-IceStorm-Advanced-ZT-A30800D-10P/dp/B08HJNKT3P?ref_=ast_sto_dp'
-    title = "Finding ZOTAC Gaming GeForce RTX 3080 Trinity 10GB"
+    title = "ZOTAC Gaming GeForce RTX 3080 Trinity 10GB"
     find_data_amazon_url(driver, url, title)
 
 

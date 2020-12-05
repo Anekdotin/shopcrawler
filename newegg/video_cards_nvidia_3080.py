@@ -25,7 +25,7 @@ def newegg_3080(driver):
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
     for div in soup.findAll('div', {'class': 'item-info'}):
-        time.sleep(1)
+        time.sleep(2)
 
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
@@ -35,8 +35,7 @@ def newegg_3080(driver):
 
             promotag = div.find_all("p", {"class": "item-promo"})
             for promo in promotag:
-                print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.ENDC}  {tag.text[0:40]}..")
-                print(f"{TerminalColors.OKBLUE}Newegg")
+                print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.OKCYAN}Newegg {TerminalColors.ENDC}  {tag.text[0:40]}..")
                 if promo.text == 'OUT OF STOCK':
                     print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}{promo.text}")
                 else:

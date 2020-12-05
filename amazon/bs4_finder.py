@@ -2,8 +2,6 @@ from bs4 import BeautifulSoup
 import time
 from datetime import datetime
 
-now = datetime.now()
-
 
 class TerminalColors:
 
@@ -21,17 +19,19 @@ class TerminalColors:
 
 
 def find_data_amazon_url(driver, url, title):
+    now = datetime.now()
+    try:
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        current_time = now.strftime("%H:%M:%S")
 
-    driver.get(url)
-    html = driver.page_source
-    soup = BeautifulSoup(html, 'html.parser')
-    current_time = now.strftime("%H:%M:%S")
+        print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.OKCYAN}Amazon {TerminalColors.ENDC}  {title}")
 
-    print(f"{TerminalColors.HEADER}[{current_time}] {TerminalColors.ENDC}  {title}..")
-    print(f"{TerminalColors.OKBLUE}Amazon")
-
-    if soup.findAll(text="In Stock."):
-        print(f"{TerminalColors.ENDC}Status:  {TerminalColors.OKGREEN}In Stock!!!!!")
-    else:
-        print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}out of stock")
-    print("")
+        if soup.findAll(text="In Stock."):
+            print(f"{TerminalColors.ENDC}Status:  {TerminalColors.OKGREEN}In Stock!!!!!")
+        else:
+            print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}OUT OF STOCK")
+        print("")
+    except:
+        pass

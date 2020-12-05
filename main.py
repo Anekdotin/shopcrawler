@@ -1,20 +1,24 @@
-from config import proxy_enabled
+
 import requests
 import random
-from random import randrange, randint
-from time import sleep
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from fake_useragent import UserAgent
+
 from lxml.html.soupparser import fromstring
 from secret import my_ip
+
 from amazon.video_cards_nvidia_3080 import *
 from amazon.video_cards_nvidia_3090 import *
+from amazon.video_cards_nvidia_3070 import *
+from amazon.video_cards_nvidia_3060 import *
+
 from newegg.video_cards_nvidia_3080 import *
 from newegg.video_cards_nvidia_3090 import *
-
+from newegg.video_cards_nvidia_3070 import *
+from newegg.video_cards_nvidia_3060 import *
 
 bannedproxy = []
 proxylist = []
@@ -79,7 +83,7 @@ def selenium_getter():
         proxy.add_to_capabilities(capabilities)
 
         options = Options()
-        options.headless = False
+        options.headless = True
         profile = webdriver.FirefoxProfile()
         profile.accept_untrusted_certs = True
         profile.set_preference("browser.privatebrowsing.autostart", True)
@@ -94,7 +98,7 @@ def selenium_getter():
         binary = FirefoxBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
 
         options = Options()
-        options.headless = False
+        options.headless = True
         profile = webdriver.FirefoxProfile()
         profile.accept_untrusted_certs = True
         profile.set_preference("browser.privatebrowsing.autostart", True)
@@ -103,7 +107,6 @@ def selenium_getter():
                                    firefox_profile=profile,
                                    firefox_binary=binary,
                                    executable_path="./geckodriver.exe")
-        driver.implicitly_wait(5)
 
     return driver
 
@@ -126,42 +129,53 @@ def check_proxy_ok(driver):
 
 def main():
     driver = selenium_getter()
-    try:
 
-        if use_proxy == 1:
-            proxyip = check_proxy_ok(driver=driver)
-            if my_ip == proxyip:
-                main()
+    # 3060
+    nvidia_3060_asustuf(driver=driver)
+    time.sleep(3)
 
-        print(TerminalColors.ENDC + "Amazon 3080 starting .. ")
+    newegg_3060(driver=driver)
 
-        driver.implicitly_wait(3)
-        nvidia_3080_zotac(driver=driver)
-        driver.implicitly_wait(3)
-        nvidia_3080_asustuf(driver=driver)
-        driver.implicitly_wait(3)
-        nvidia_3080_pny(driver=driver)
-        driver.implicitly_wait(3)
-        nvidia_3080_msi(driver=driver)
-        nvidia_3080_evga(driver=driver)
-        nvidia_3080_gigabyte(driver=driver)
+    # 3070
 
-        print(TerminalColors.ENDC + "Newegg 3080 starting .. ")
-        newegg_3080(driver=driver)
+    nvidia_3070_pny(driver=driver)
+    time.sleep(3)
 
-        print(TerminalColors.ENDC + "Amazon 3090 starting .. ")
-        nvidia_3090_zotac(driver=driver)
-        nvidia_3090_asus(driver=driver)
-        nvidia_3090_pny(driver=driver)
-        nvidia_3090_msi(driver=driver)
-        nvidia_3090_gigabyte(driver=driver)
+    newegg_3070(driver=driver)
 
-        print(TerminalColors.ENDC + "Newegg 3090 starting .. ")
-        newegg_3090(driver=driver)
+    # 3080
 
-    except Exception as e:
-        print(str(e))
+    print("")
+    time.sleep(3)
+    nvidia_3080_zotac(driver=driver)
+    time.sleep(3)
+    nvidia_3080_asustuf(driver=driver)
+    time.sleep(3)
+    nvidia_3080_pny(driver=driver)
+    time.sleep(3)
+    newegg_3080(driver=driver)
+    nvidia_3080_msi(driver=driver)
+    time.sleep(3)
+    nvidia_3080_evga(driver=driver)
+    time.sleep(3)
+    nvidia_3080_gigabyte(driver=driver)
+    time.sleep(3)
+
+    # 3090
+
+    nvidia_3090_zotac(driver=driver)
+    time.sleep(3)
+    nvidia_3090_asus(driver=driver)
+    time.sleep(3)
+    nvidia_3090_pny(driver=driver)
+    time.sleep(3)
+    newegg_3090(driver=driver)
+    nvidia_3090_msi(driver=driver)
+    time.sleep(3)
+    nvidia_3090_gigabyte(driver=driver)
 
     driver.close()
 
-main()
+
+while True:
+    main()
