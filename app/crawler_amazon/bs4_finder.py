@@ -4,7 +4,7 @@ from datetime import datetime
 from app import db
 
 from app.models import Nvidia3060, Nvidia3080, Nvidia3090, Nvidia3070
-
+from app.addtodb import outta_stock, add_data
 
 class TerminalColors:
 
@@ -21,7 +21,7 @@ class TerminalColors:
     UNDERLINE = '\033[4m'
 
 
-def find_data_amazon_url(driver, url, title):
+def find_data_amazon_url(driver, url, title, typeofcard):
     now = datetime.now()
     try:
         driver.get(url)
@@ -33,8 +33,13 @@ def find_data_amazon_url(driver, url, title):
 
         if soup.findAll(text="In Stock."):
             print(f"{TerminalColors.ENDC}Status:  {TerminalColors.OKGREEN}In Stock!!!!!")
+            add_data(typeofitem=typeofcard,
+                     seller=1,
+                     url=url)
         else:
             print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}OUT OF STOCK")
+            outta_stock(typeofitem=typeofcard, seller=1)
         print("")
+
     except:
         pass

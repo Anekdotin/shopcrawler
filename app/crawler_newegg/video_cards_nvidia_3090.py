@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 import time
 from datetime import datetime
+from app.addtodb import outta_stock, add_data
 
 
 class TerminalColors:
@@ -39,6 +40,10 @@ def newegg_3090(driver):
 
                 if promo.text == 'OUT OF STOCK':
                     print(f"{TerminalColors.ENDC}Status:  {TerminalColors.FAIL}{promo.text}")
+                    outta_stock(typeofitem=3090, seller=2)
                 else:
                     print(f"{TerminalColors.ENDC}Status:  {TerminalColors.OKGREEN}{promo.text}")
+                    add_data(typeofitem=3090,
+                             seller=2,
+                             url=url)
                 print("")
